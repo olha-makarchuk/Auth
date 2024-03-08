@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\basic_auth",
+    "\\forms_auth",
+    "\\token_auth"
+  ],
+  "SelectedNode": "\\basic_auth\\index.js",
+  "PreviewInSolutionExplorer": false
+}
