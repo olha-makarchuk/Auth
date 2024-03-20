@@ -6,6 +6,7 @@ const path = require('path');
 const port = 3000;
 const fs = require('fs');
 const getAccessToken = require("./authToken");
+const jwt = require('jsonwebtoken')
 
 const app = express();
 app.use(bodyParser.json());
@@ -110,9 +111,17 @@ app.post('/api/login', async (req, res) => {
     try{
         const access_token = await getAccessToken(login, password);
         if(access_token){
-            ACCESS_TOKEN = access_token;
-            req.session.username = login;
-            res.json({token: req.sessionId, access_token: access_token});
+            const public = fs.readFileSync(process.env.PEM, 'utf-8');
+            const decoded = jwt.verify(access_token, public, {algorithms: ['RS256']});
+            if(decoded){
+                ACCESS_TOKEN = access_token;
+                req.session.username = login;
+                res.json({token: req.sessionId, access_token: access_token, decoded: decoded});
+            }else{
+                console.error('Token verification error', err);
+                return res.status(401).json({message:'Invalid token'});
+            }
+            
         }
         else{
             res.status(401).send('Unathorized!');
